@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -104,6 +105,9 @@ func handleListEC2Instances(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := flag.String("http", "8080", "Specify listening port")
+	flag.Parse()
+
 	http.HandleFunc("/list-ec2", handleListEC2Instances)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", *port), nil))
 }
