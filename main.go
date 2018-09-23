@@ -22,26 +22,10 @@ const (
 )
 
 type SlackRequest struct {
-	token       string
-	teamId      string
-	teamDomain  string
-	channelId   string
-	channelName string
-	command     string
-	userId      string
-	userName    string
-	text        string
-	responseUrl string
-	triggerId   string
+	text string
 }
 
 func parseRequest(r *http.Request) (s SlackRequest) {
-
-	s.token = r.FormValue("token")
-	s.teamId = r.FormValue("team_id")
-	s.command = r.FormValue("command")
-	s.userId = r.FormValue("user_id")
-	s.userName = r.FormValue("user_name")
 	s.text = r.FormValue("text")
 
 	return s
@@ -81,10 +65,10 @@ func handleListEC2Instances(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Header.Set("Content-Type", "application/json")
 	svc := ec2.New(session.New())
-	filter := &ec2.DescribeInstancesInput{}
+	input := &ec2.DescribeInstancesInput{}
 
 	if s != 1 {
-		filter.Filters = []*ec2.Filter{
+		input.Filters = []*ec2.Filter{
 			{
 				Name: aws.String("instance-state-code"),
 				Values: []*string{
@@ -94,7 +78,7 @@ func handleListEC2Instances(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	result, err := svc.DescribeInstances(filter)
+	result, err := svc.DescribeInstances(input)
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
